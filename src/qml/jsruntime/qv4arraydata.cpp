@@ -216,8 +216,10 @@ void ArrayData::ensureAttributes(Object *o)
 void SimpleArrayData::markObjects(Heap::Base *d, ExecutionEngine *e)
 {
     Heap::SimpleArrayData *dd = static_cast<Heap::SimpleArrayData *>(d);
-    uint l = dd->len;
-    for (uint i = 0; i < l; ++i)
+    uint remainingEntriesToMark = dd->len;
+    for (uint i = dd->offset; i < dd->alloc && remainingEntriesToMark > 0; ++i, --remainingEntriesToMark)
+        dd->arrayData[i].mark(e);
+    for (uint i = 0; i < dd->offset && remainingEntriesToMark > 0; ++i, --remainingEntriesToMark)
         dd->arrayData[i].mark(e);
 }
 
